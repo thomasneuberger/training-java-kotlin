@@ -16,6 +16,19 @@ Install the following using the official installation instructions for your oper
 - [IntelliJ IDEA](https://www.jetbrains.com/idea/download/) and [Android Studio](https://developer.android.com/studio).
 - The [Kotlin command-line compiler](https://kotlinlang.org/docs/command-line.html), for the Kotlin command-line exercise below.
 
+On Windows, you can install the tools with `winget` from PowerShell:
+
+```powershell
+winget install --id EclipseAdoptium.Temurin.21.JDK --exact
+winget install --id Git.Git --exact
+winget install --id Docker.DockerDesktop --exact
+winget install --id Microsoft.AzureCLI --exact
+winget install --id JetBrains.IntelliJIDEA --exact
+winget install --id Google.AndroidStudio --exact
+```
+
+Install the Kotlin command-line compiler using its official instructions above.
+
 You do not need an Azure subscription or a running Docker container to complete this phase. They will be used in later phases.
 
 Open a new terminal after installation and check that the tools are available:
