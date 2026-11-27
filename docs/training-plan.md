@@ -11,20 +11,20 @@
 
 | Part | Technology |
 |---|---|
-| Android app | Kotlin, Jetpack Compose, ViewModel/StateFlow, Retrofit/Ktor client, MSAL for Android |
-| Backend | Java 21 LTS, Spring Boot 3.x (REST + WebSocket), Spring Data JPA/Hibernate, Flyway |
-| Database | Existing Azure SQL Server instance |
+| Android app | Kotlin, Gradle (Kotlin DSL), Jetpack Compose, ViewModel/StateFlow, Retrofit/Ktor client, MSAL for Android |
+| Backend | Java 21 LTS, Maven, Spring Boot 3.x (REST + WebSocket/STOMP), Spring Data JPA/Hibernate, Flyway |
+| Storage | Existing Azure SQL Server instance for application data and profile-image references; Azure Blob Storage for image files |
 | Auth | Microsoft Entra ID (OIDC / OAuth2, JWT access tokens validated by the backend) |
-| Hosting | Docker image on one or more Azure Container Apps |
+| Hosting | Docker image on one or more Azure Container Apps, provisioned with Bicep |
 | CI/CD | GitHub Actions (backend image + Android build/Play upload) |
 
-Assumed repository layout: `backend/` (Gradle or Maven Java project), `android/` (Kotlin app), `infrastructure/` (Azure IaC), `docs/`.
+Assumed repository layout: `backend/` (Maven Java project), `android/` (Gradle Kotlin app), `infrastructure/` (Bicep), `docs/`.
 
 ## Modules
 
 ### Phase 0 – Tooling (week 1)
 1. **Setup**: JDK 21 (Temurin), IntelliJ IDEA (backend) and Android Studio (app), Git, Docker, Azure CLI.
-2. **Build tools**: Gradle vs. Maven vs. MSBuild/NuGet; dependency management, wrapper, project layout, running tests.
+2. **Build tools**: Maven for the backend and Gradle with Kotlin DSL for Android; compare both with MSBuild/NuGet, including dependency management, wrappers, project layout and running tests.
 - *Deliverable*: "Hello World" in Java and Kotlin built from the command line.
 
 ### Phase 1 – Modern Java (weeks 1–3)
@@ -36,9 +36,9 @@ Assumed repository layout: `backend/` (Gradle or Maven Java project), `android/`
 ### Phase 2 – Backend with Spring Boot (weeks 3–6)
 6. **Spring Boot basics**: dependency injection (vs. ASP.NET Core DI), configuration/profiles (vs. `appsettings`), controllers, validation, error handling (ProblemDetails), OpenAPI docs.
 7. **Database access**: JDBC, Spring Data JPA/Hibernate (vs. EF Core), connecting to Azure SQL (mssql-jdbc), Flyway migrations, transactions, Testcontainers for integration tests.
-8. **Domain & API**: entities `Player` (display name, profile image), `Game`, `Move`; REST API for create/join/list games and submit moves, server-side rule validation using the game engine.
-9. **Real-time play**: WebSocket/STOMP or Server-Sent Events (vs. SignalR); consequences when running multiple container instances (shared state in DB, optional Redis / Azure Web PubSub as backplane).
-10. **Profile images**: upload endpoint, size/type validation, storage (Azure Blob Storage vs. DB), serving with caching.
+8. **Domain & API**: entities `Player` (display name and image reference), `Game`, `Move`; REST API for create/join/list games and submit moves, server-side rule validation using the game engine.
+9. **Real-time play**: WebSocket/STOMP (vs. SignalR); consequences when running multiple container instances (shared state in DB, optional Redis / Azure Web PubSub as backplane).
+10. **Profile images**: upload endpoint, size/type validation, Azure Blob Storage in a storage account, database references and serving with caching. Keep the container private and authorize access to images.
 - *Deliverable*: fully tested backend running locally against Azure SQL (or Testcontainers).
 
 ### Phase 3 – Authentication with Entra ID (week 7)
@@ -56,10 +56,10 @@ Assumed repository layout: `backend/` (Gradle or Maven Java project), `android/`
 
 ### Phase 5 – Deployment and operations (weeks 11–12)
 18. **Containerize the backend**: Dockerfile (multi-stage, JRE image), health endpoints (Actuator), logging, metrics.
-19. **Azure Container Apps**: IaC (Bicep/Terraform), ingress, scaling rules, secrets & managed identity for SQL access, Key Vault, revisions, multiple replicas.
+19. **Azure Container Apps**: briefly provision infrastructure with Bicep; cover ingress, scaling rules, secrets & managed identity for SQL and Blob Storage access, Key Vault, revisions and multiple replicas.
 20. **Environments**: `dev` / `staging` / `prod` – separate Container Apps (and databases or schemas), config per environment, separate Entra app registrations, GitHub Actions with environment approvals.
 21. **Android environments**: Gradle build types and product flavors (`dev`, `staging`, `prod`) with different application IDs, API URLs and Entra client IDs; signing configs and secrets handling.
-22. **Google Play release**: Play Console account, app signing (Play App Signing), Android App Bundle, internal / closed / open testing tracks and production, promotion between tracks (this maps to the staging concept), store listing, privacy policy and data-safety form, versioning, automated upload with GitHub Actions (e.g. Gradle Play Publisher).
+22. **Google Play release**: create a Play Console developer account (none exists yet), complete registration, payment and required verification; check current account-specific testing and production-access requirements before scheduling release. Cover Play App Signing, Android App Bundle, internal / closed / open testing tracks and production, promotion between tracks (this maps to the staging concept), store listing, privacy policy and data-safety form, versioning, automated upload with GitHub Actions (e.g. Gradle Play Publisher).
 23. **Wrap-up**: monitoring (Application Insights/Azure Monitor), crash reporting, retrospective and next steps (Kotlin Multiplatform, Spring Native, etc.).
 
 ## Suggested milestones
@@ -71,13 +71,17 @@ Assumed repository layout: `backend/` (Gradle or Maven Java project), `android/`
 | 6 | Backend with DB, REST and real-time API |
 | 7 | Entra ID–secured API |
 | 10 | Android app playable end-to-end locally |
-| 12 | Deployed to Azure Container Apps (staging + prod), app on Play internal/closed track |
+| 12 | Deployed to Azure Container Apps (staging + prod), app submitted to a Play internal/closed track, subject to account registration and verification |
+
+### Optional later stage – AI opponent
+
+After two-player online play and deployment work, add a computer opponent using the existing server-side game engine. Explore a rule-based or search-based move selection strategy that respects the Fritz final-move rule, add difficulty levels, and test legal moves and game outcomes. This is an extension, not a prerequisite for the core milestones.
 
 ## .NET → Java/Kotlin cheat sheet
 
 | .NET / TS | Java / Kotlin |
 |---|---|
-| NuGet, MSBuild, `.csproj` | Maven Central, Gradle/Maven |
+| NuGet, MSBuild, `.csproj` | Maven Central, Maven (`backend/`), Gradle (`android/`) |
 | ASP.NET Core | Spring Boot |
 | Entity Framework Core | Spring Data JPA / Hibernate |
 | LINQ | Streams API / Kotlin collection functions |
@@ -87,14 +91,3 @@ Assumed repository layout: `backend/` (Gradle or Maven Java project), `android/`
 | `appsettings.json` | `application.yml`, profiles |
 | Blazor/React components | Jetpack Compose |
 | MSAL.NET | MSAL for Java / Android |
-
-## Open questions (please confirm; the plan assumes the defaults in bold)
-
-1. Backend framework: **Spring Boot** (alternatives: Quarkus, Micronaut)?
-2. Build tool: **Gradle (Kotlin DSL)** for the Android app and **Maven or Gradle** for the backend?
-3. UI toolkit: **Jetpack Compose** (not XML views)?
-4. Real-time transport: **WebSocket/STOMP**, or polling/SSE for simplicity?
-5. Profile image storage: **Azure Blob Storage** or directly in the SQL database?
-6. Infrastructure as code: **Bicep** or Terraform?
-7. Depth of Play Store content: Is an existing Google Play developer account (one-time fee) available?
-8. Is the intended duration/time budget (~12 weeks) acceptable, and should game modes beyond two-player online (e.g., vs. AI, local) be included?
