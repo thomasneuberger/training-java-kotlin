@@ -7,17 +7,19 @@ This phase is for an experienced C# and TypeScript developer. Use familiar conce
 
 ## 1. Set up a small Java project
 
-Create a Maven project in `backend/`, using Java 21 and the Maven wrapper. Keep the game rules in ordinary Java classes with no Spring or database dependencies. Use a package such as `com.example.fritz.game`; Java package names are conventionally lowercase and map to directories under `src/main/java`.
+Create a Maven project in `backend/` with IntelliJ's Maven project wizard, selecting JDK 21, or follow [Maven's quick-start guide](https://maven.apache.org/guides/getting-started/maven-in-five-minutes.html). In `pom.xml`, set `<maven.compiler.release>21</maven.compiler.release>` under `<properties>`; see the [Maven Compiler Plugin configuration](https://maven.apache.org/plugins/maven-compiler-plugin/examples/set-compiler-release.html). Keep the game rules in ordinary Java classes with no Spring or database dependencies. Use a package such as `com.example.fritz.game`; Java package names are conventionally lowercase and map to directories under `src/main/java`.
 
-The matching tests go under `src/test/java`. Add JUnit Jupiter, AssertJ, and Mockito as test-scoped dependencies in the Maven project. Use the IDE's Maven support or run tests from the project directory:
+The matching tests go under `src/test/java`. Add JUnit Jupiter, AssertJ, and Mockito to the `<dependencies>` section of `pom.xml`, each with `<scope>test</scope>`; follow their [JUnit](https://junit.org/junit5/docs/current/user-guide/#running-tests-build-maven), [AssertJ](https://assertj.github.io/doc/#assertj-core-getting-started), and [Mockito Maven setup](https://github.com/mockito/mockito/wiki/Using-Mockito-with-Maven) guides for the Maven coordinates. Generate the [Maven Wrapper](https://maven.apache.org/tools/wrapper/) from the project directory with `mvn wrapper:wrapper`, then use the wrapper to run tests:
 
 ```shell
 ./mvnw test
 ```
 
-Commit the wrapper and build files along with the project. This makes the Java version, dependencies, and test command reproducible for the next phase.
+On Windows, run `mvnw.cmd test`. Commit the wrapper and build files along with the project. This makes the Java version, dependencies, and test command reproducible for the next phase.
 
 ## 2. Java foundations for C# developers
+
+Use the [dev.java learning materials](https://dev.java/learn/) for additional explanations and examples, the [Java 21 language documentation](https://docs.oracle.com/en/java/javase/21/language/) when checking language features, and the [Java 21 API documentation](https://docs.oracle.com/en/java/javase/21/docs/api/index.html) for library classes.
 
 ### Packages, classes, and interfaces
 
@@ -119,7 +121,7 @@ The Fritz engine is small, deterministic, and synchronous. Do not add concurrenc
 
 ## 4. Test-first development
 
-Use JUnit 5 (`@Test`, assertions, and parameterized tests where useful) to define behavior. AssertJ provides readable assertions:
+Use [JUnit 5](https://junit.org/junit5/docs/current/user-guide/) (`@Test`, assertions, and parameterized tests where useful) to define behavior. [AssertJ](https://assertj.github.io/doc/) provides readable assertions, and the [Mockito documentation](https://site.mockito.org/) covers test doubles:
 
 ```java
 @Test
