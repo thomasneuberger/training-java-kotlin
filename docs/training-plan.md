@@ -23,8 +23,9 @@ Assumed repository layout: `backend/` (Maven Java project), `android/` (Gradle K
 ## Modules
 
 ### Phase 0 – Tooling (week 1)
-1. **Setup**: JDK 21 (Temurin), IntelliJ IDEA (backend) and Android Studio (app), Git, Docker, Azure CLI.
-2. **Build tools**: Maven for the backend and Gradle with Kotlin DSL for Android; compare both with MSBuild/NuGet, including dependency management, wrappers, project layout and running tests.
+1. **Editor and setup**: introduce IntelliJ IDEA for Java backend development and Android Studio for Android/Kotlin, including their common workflows and useful shortcuts. Explain that VS Code is familiar and usable, but the JetBrains IDEs are the standard integrated environments for these parts of the stack; compare when VS Code is a reasonable alternative. Set up JDK 21 (Temurin), Git, Docker and Azure CLI.
+2. **Recommended plugins and tooling**: configure relevant IDE support such as the Spring Boot and Kotlin plugins, Android tooling, database integration, and code-quality/formatting support (for example, Checkstyle or Spotless where appropriate). Cover the IDE's built-in Maven/Gradle integration and command-line wrappers.
+3. **Build tools**: Maven for the backend and Gradle with Kotlin DSL for Android; compare both with MSBuild/NuGet, including dependency management, project layout and running tests.
 - *Deliverable*: "Hello World" in Java and Kotlin built from the command line.
 
 ### Phase 1 – Modern Java (weeks 1–3)
@@ -42,8 +43,8 @@ Assumed repository layout: `backend/` (Maven Java project), `android/` (Gradle K
 - *Deliverable*: fully tested backend running locally against Azure SQL (or Testcontainers).
 
 ### Phase 3 – Authentication with Entra ID (week 7)
-11. **Entra ID concepts**: app registrations (API + mobile client), scopes, OIDC/OAuth2 with PKCE, access vs. ID tokens.
-12. **Securing the API**: Spring Security resource server, JWT validation, mapping the `oid` claim to a `Player`, auto-provisioning on first login, authorization rules (only participants may move).
+11. **Java/Spring integration**: configure Entra app registrations for the API and Android client using the already-known OIDC/OAuth2, scopes, PKCE and token concepts. Focus on Java configuration and the Spring Security OAuth2 resource-server support.
+12. **Securing the API**: configure issuer and audience validation, map the validated `oid` claim to a `Player`, auto-provision on first login, and apply authorization rules (only participants may move). Test protected endpoints with mocked JWTs and a real Entra token.
 - *Deliverable*: protected endpoints, tested with real Entra tokens and with mocked JWTs.
 
 ### Phase 4 – Kotlin and Android (weeks 8–10)
