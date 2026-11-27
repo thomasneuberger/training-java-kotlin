@@ -28,7 +28,7 @@ Assumed repository layout: `backend/` (Maven Java project), `android/` (Gradle K
 3. **Build tools**: Maven for the backend and Gradle with Kotlin DSL for Android; compare both with MSBuild/NuGet, including dependency management, project layout and running tests.
 - *Deliverable*: "Hello World" in Java and Kotlin built from the command line.
 
-### Phase 1 – Modern Java (weeks 1–3)
+### Phase 1 – Modern Java (weeks 1–3) ([training guide](phase-1-modern-java.md))
 3. **Java language for C# developers**: packages vs. namespaces, classes, interfaces, generics (type erasure), exceptions (checked vs. unchecked), `var`, text blocks.
 4. **Modern features**: records, sealed interfaces, pattern matching (`switch`, `instanceof`), enums, `Optional`, streams (vs. LINQ), `java.time`, virtual threads, `CompletableFuture`.
 5. **Testing**: JUnit 5, AssertJ, Mockito (vs. xUnit/Moq).
