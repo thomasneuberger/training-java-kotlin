@@ -7,3 +7,5 @@ As an example project a mobile app for an advanced version of Tic-Tac-Toe called
 ## Training plan
 
 See [docs/training-plan.md](docs/training-plan.md).
+
+Start with [Phase 0 – Tooling](docs/phase-0-tooling.md).
