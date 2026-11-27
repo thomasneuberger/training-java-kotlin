@@ -1,0 +1,100 @@
+# Training plan: modern Java (backend) and Kotlin (Android frontend)
+
+## Audience and approach
+
+- Experienced developer, mainly .NET (backend/cloud, web/desktop), plus Angular/React/Vue. Solid database knowledge, but no Java/Kotlin/Android experience.
+- Learning by building: every module ends with a working increment of the example app **Fritz** (5x5 Tic-Tac-Toe; 3 in a row wins; the *Fritz rule* gives the opponent one last move after the first player reaches 3 in a row; see <https://github.com/thomasneuberger/fritz>).
+- Each topic is introduced by mapping it to its .NET / TypeScript counterpart (see the cheat sheet at the end).
+- Target: ~12 weeks at ~6–8 h/week. Each module has theory, a hands-on task and a "definition of done".
+
+## Target architecture
+
+| Part | Technology |
+|---|---|
+| Android app | Kotlin, Jetpack Compose, ViewModel/StateFlow, Retrofit/Ktor client, MSAL for Android |
+| Backend | Java 21 LTS, Spring Boot 3.x (REST + WebSocket), Spring Data JPA/Hibernate, Flyway |
+| Database | Existing Azure SQL Server instance |
+| Auth | Microsoft Entra ID (OIDC / OAuth2, JWT access tokens validated by the backend) |
+| Hosting | Docker image on one or more Azure Container Apps |
+| CI/CD | GitHub Actions (backend image + Android build/Play upload) |
+
+Assumed repository layout: `backend/` (Gradle or Maven Java project), `android/` (Kotlin app), `infrastructure/` (Azure IaC), `docs/`.
+
+## Modules
+
+### Phase 0 – Tooling (week 1)
+1. **Setup**: JDK 21 (Temurin), IntelliJ IDEA (backend) and Android Studio (app), Git, Docker, Azure CLI.
+2. **Build tools**: Gradle vs. Maven vs. MSBuild/NuGet; dependency management, wrapper, project layout, running tests.
+- *Deliverable*: "Hello World" in Java and Kotlin built from the command line.
+
+### Phase 1 – Modern Java (weeks 1–3)
+3. **Java language for C# developers**: packages vs. namespaces, classes, interfaces, generics (type erasure), exceptions (checked vs. unchecked), `var`, text blocks.
+4. **Modern features**: records, sealed interfaces, pattern matching (`switch`, `instanceof`), enums, `Optional`, streams (vs. LINQ), `java.time`, virtual threads, `CompletableFuture`.
+5. **Testing**: JUnit 5, AssertJ, Mockito (vs. xUnit/Moq).
+- *Deliverable*: the **Fritz game engine** as a pure Java library (board, moves, win detection, Fritz rule) with thorough unit tests, ported from the Blazor `GameService`.
+
+### Phase 2 – Backend with Spring Boot (weeks 3–6)
+6. **Spring Boot basics**: dependency injection (vs. ASP.NET Core DI), configuration/profiles (vs. `appsettings`), controllers, validation, error handling (ProblemDetails), OpenAPI docs.
+7. **Database access**: JDBC, Spring Data JPA/Hibernate (vs. EF Core), connecting to Azure SQL (mssql-jdbc), Flyway migrations, transactions, Testcontainers for integration tests.
+8. **Domain & API**: entities `Player` (display name, profile image), `Game`, `Move`; REST API for create/join/list games and submit moves, server-side rule validation using the game engine.
+9. **Real-time play**: WebSocket/STOMP or Server-Sent Events (vs. SignalR); consequences when running multiple container instances (shared state in DB, optional Redis / Azure Web PubSub as backplane).
+10. **Profile images**: upload endpoint, size/type validation, storage (Azure Blob Storage vs. DB), serving with caching.
+- *Deliverable*: fully tested backend running locally against Azure SQL (or Testcontainers).
+
+### Phase 3 – Authentication with Entra ID (week 7)
+11. **Entra ID concepts**: app registrations (API + mobile client), scopes, OIDC/OAuth2 with PKCE, access vs. ID tokens.
+12. **Securing the API**: Spring Security resource server, JWT validation, mapping the `oid` claim to a `Player`, auto-provisioning on first login, authorization rules (only participants may move).
+- *Deliverable*: protected endpoints, tested with real Entra tokens and with mocked JWTs.
+
+### Phase 4 – Kotlin and Android (weeks 8–10)
+13. **Kotlin for C# developers**: null safety, data classes, extension functions, sealed classes, `when`, scope functions, coroutines & Flow (vs. async/await, `IAsyncEnumerable`), kotlinx.serialization.
+14. **Android fundamentals**: project structure, Activity, manifest, resources, Gradle modules, lifecycle, navigation.
+15. **Jetpack Compose**: composables, state hoisting, theming/Material 3, previews (vs. Blazor/React components), board UI for Fritz.
+16. **App architecture**: MVVM with ViewModel + StateFlow, repository pattern, Hilt DI, Room for local caching/offline-first, testing (JUnit, Turbine, Compose UI tests).
+17. **Networking & auth**: Retrofit/Ktor client, MSAL sign-in, token handling, profile screen (name + image via image picker/Coil), real-time game updates.
+- *Deliverable*: a playable app: sign in, edit profile, create/join a game, play against another player.
+
+### Phase 5 – Deployment and operations (weeks 11–12)
+18. **Containerize the backend**: Dockerfile (multi-stage, JRE image), health endpoints (Actuator), logging, metrics.
+19. **Azure Container Apps**: IaC (Bicep/Terraform), ingress, scaling rules, secrets & managed identity for SQL access, Key Vault, revisions, multiple replicas.
+20. **Environments**: `dev` / `staging` / `prod` – separate Container Apps (and databases or schemas), config per environment, separate Entra app registrations, GitHub Actions with environment approvals.
+21. **Android environments**: Gradle build types and product flavors (`dev`, `staging`, `prod`) with different application IDs, API URLs and Entra client IDs; signing configs and secrets handling.
+22. **Google Play release**: Play Console account, app signing (Play App Signing), Android App Bundle, internal / closed / open testing tracks and production, promotion between tracks (this maps to the staging concept), store listing, privacy policy and data-safety form, versioning, automated upload with GitHub Actions (e.g. Gradle Play Publisher).
+23. **Wrap-up**: monitoring (Application Insights/Azure Monitor), crash reporting, retrospective and next steps (Kotlin Multiplatform, Spring Native, etc.).
+
+## Suggested milestones
+
+| Week | Milestone |
+|---|---|
+| 1 | Tooling set up, Java/Kotlin hello world |
+| 3 | Game engine in Java with tests |
+| 6 | Backend with DB, REST and real-time API |
+| 7 | Entra ID–secured API |
+| 10 | Android app playable end-to-end locally |
+| 12 | Deployed to Azure Container Apps (staging + prod), app on Play internal/closed track |
+
+## .NET → Java/Kotlin cheat sheet
+
+| .NET / TS | Java / Kotlin |
+|---|---|
+| NuGet, MSBuild, `.csproj` | Maven Central, Gradle/Maven |
+| ASP.NET Core | Spring Boot |
+| Entity Framework Core | Spring Data JPA / Hibernate |
+| LINQ | Streams API / Kotlin collection functions |
+| `async`/`await`, `Task` | `CompletableFuture`, virtual threads / Kotlin coroutines |
+| SignalR | WebSocket/STOMP, SSE |
+| xUnit, Moq | JUnit 5, Mockito / MockK |
+| `appsettings.json` | `application.yml`, profiles |
+| Blazor/React components | Jetpack Compose |
+| MSAL.NET | MSAL for Java / Android |
+
+## Open questions (please confirm; the plan assumes the defaults in bold)
+
+1. Backend framework: **Spring Boot** (alternatives: Quarkus, Micronaut)?
+2. Build tool: **Gradle (Kotlin DSL)** for the Android app and **Maven or Gradle** for the backend?
+3. UI toolkit: **Jetpack Compose** (not XML views)?
+4. Real-time transport: **WebSocket/STOMP**, or polling/SSE for simplicity?
+5. Profile image storage: **Azure Blob Storage** or directly in the SQL database?
+6. Infrastructure as code: **Bicep** or Terraform?
+7. Depth of Play Store content: Is an existing Google Play developer account (one-time fee) available?
+8. Is the intended duration/time budget (~12 weeks) acceptable, and should game modes beyond two-player online (e.g., vs. AI, local) be included?
