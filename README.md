@@ -9,3 +9,5 @@ As an example project a mobile app for an advanced version of Tic-Tac-Toe called
 See [docs/training-plan.md](docs/training-plan.md).
 
 Start with [Phase 0 – Tooling](docs/phase-0-tooling.md).
+
+Continue with [Phase 1 – Modern Java](docs/phase-1-modern-java.md).
