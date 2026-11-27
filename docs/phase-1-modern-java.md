@@ -1,6 +1,6 @@
 # Phase 1 – Modern Java
 
-**Time:** about 18–24 hours over weeks 1–3  
+**Time:** about 18–24 hours over weeks 1–3
 **Goal:** learn modern Java by building a well-tested, framework-independent Fritz game engine.
 
 This phase is for an experienced C# and TypeScript developer. Use familiar concepts as a starting point, but learn Java's own type system, APIs, conventions, and trade-offs rather than translating C# syntax line by line. Use the JDK 21 and IDE setup from [Phase 0](phase-0-tooling.md). The engine will later become part of the Spring Boot backend.
